@@ -4,14 +4,14 @@ const db = require('../db');
 const nodemailer = require('nodemailer');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
-// Register Controller
+
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
   secure: false, // true for port 465, false for port 587
   auth: {
-      user:"radhikamodi057@gmail.com",
-      pass: "tfuk rurb wpnp zhqm",
+      user:process.env.SMTP_USER,
+      pass:process.env.SMTP_PASS,
   },
   
 });
