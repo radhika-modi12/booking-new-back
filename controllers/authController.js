@@ -4,7 +4,6 @@ const db = require('../db');
 const nodemailer = require('nodemailer');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
-console.log("jwse",process.env)
 // Register Controller
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -63,9 +62,10 @@ exports.login = (req, res) => {
   const { email, password } = req.body;
   const query = 'SELECT * FROM users WHERE email = ?';
   db.query(query, [email], async (err, results) => {
+    console.log({results})
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
-
+if(results[0].is_verify == 0) return res.status(401).json({ message: 'Email is not verified' });
     const user = results[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
