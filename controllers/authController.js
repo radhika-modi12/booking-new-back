@@ -25,11 +25,12 @@ exports.register = async (req, res) => {
       console.log(err)
       if (results.length > 0) return res.status(401).json({ message: 'Email Already Register' });
     const query = 'INSERT INTO users (first_name, last_name,email,password) VALUES (?, ?,?,?)';
-    db.query(query, [first_name, last_name,email, hashedPassword], (err, results) => {
+    db.query(query, [first_name, last_name,email, hashedPassword],async (err, results1) => {
       if (err) return res.status(500).json({ error: err.message });
-    });
+    
     const verificationToken = uuidv4();
-    const verificationLink = `${process.env.BASE_URL}/verify?token=${verificationToken}`;
+    console.log({results1})
+    const verificationLink = `${process.env.BASE_URL}/verify?id=${results1.insertId}`;
    await transporter.sendMail({
         from: process.env.SMTP_USER,
         to: email,
@@ -38,20 +39,21 @@ exports.register = async (req, res) => {
     });
     res.status(200).send('Verification email sent!');
   })
+})
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 exports.verifyEmail = (req, res) => {
-  const { email } = req.body;
-  const query = 'SELECT * FROM users WHERE email = ?';
-  db.query(query, [email], async (err, results) => {
+  const { id } = req.query;
+  console.log(id)
+  const query = 'SELECT * FROM users WHERE id = ?';
+  db.query(query, [id], async (err, results) => {
     if (results.length === 0) {
       return res.status(400).send('Invalid User Record');
   }
-  const updateQuery = `UPDATE users SET is_verify = 1 WHERE email = ?`;
-  db.query(updateQuery, [email], async (err, results1) => {
-    console.log(err,results1)
+  const updateQuery = `UPDATE users SET is_verify = 1 WHERE id = ?`;
+  db.query(updateQuery, [id], async (err, results1) => {
   res.status(200).send('Email verified successfully!');
   })
 })
