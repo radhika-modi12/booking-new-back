@@ -1,8 +1,6 @@
 const express = require('express');
 const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
-const uploadRoutes = require('./routes/uploadRoutes');
-const postRoutes = require('./routes/postRoutes');
 const dotenv = require('dotenv');
 const db = require('./db');
 const fileUpload = require('express-fileupload');
@@ -23,11 +21,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse requests of content-type - form-data/multipart
-app.use(express.static('./public'));
 app.use(fileUpload());
 app.use('/auth', authRoutes);
-// app.use('/file', uploadRoutes);
-// app.use('/post', postRoutes);
 app.use("/customer",customerRoutes)
 
 // Serve static files (like images) from the uploads folder
